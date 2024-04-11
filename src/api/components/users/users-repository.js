@@ -69,7 +69,7 @@ async function deleteUser(id) {
 
 
 async function changePassword(id, password){
-  return User.findByIdAndUpdate(id,{password: password});
+  return User.findByIdAndUpdate(id, {password: password});
 }
 
 

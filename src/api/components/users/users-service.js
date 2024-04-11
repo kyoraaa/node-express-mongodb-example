@@ -1,6 +1,7 @@
 const usersRepository = require('./users-repository');
 const { hashPassword } = require('../../../utils/password');
 const { passwordMatched } = require('../../../utils/password');
+const { hash } = require('bcrypt');
 
 /**
  * Get list of users
@@ -121,28 +122,15 @@ async function changePassword(id, oldpassword, newpassword) {
   const user = await usersRepository.getUser(id);
   
   //Validate old password
-  const userpassword = user ? user.oldpassword : '<RANDOM_PASSWORD_FILLER>';
+  const userpassword = user.password;
   const passwordChecked = await passwordMatched(oldpassword, userpassword);
-
-  if (user && passwordChecked) {
-    return false;
-  }
-  
-  if (!user) {
-    return false;
-  }
-
-
-  //Hash new password
   const hashedNewPassword = await hashPassword(newpassword);
 
-  try {
-    await usersRepository.changePassword(id, hashedNewPassword);
-  } catch (err) {
-    return false;
+  if (user && passwordChecked) {
+  return usersRepository.changePassword(id, hashedNewPassword);
   }
 
-  return true;
+  return null;
 }
 
 module.exports = {
